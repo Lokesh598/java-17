@@ -1,10 +1,14 @@
 package org.lokesh.poc.cli;
 
 import org.lokesh.poc.cli.service.CourseRetrievalService;
+import org.lokesh.poc.cli.service.PluralsightCourse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
+
+import static java.util.function.Predicate.not;
 
 public class CourseRetriever {
     private static final Logger LOG = LoggerFactory.getLogger(CourseRetriever.class);
@@ -28,7 +32,9 @@ public class CourseRetriever {
         LOG.info("Retrieve courses for author '{}'", authorId);
         CourseRetrievalService courseRetrievalService = new CourseRetrievalService();
 
-        String coursesToStore = courseRetrievalService.getCourseFor(authorId);
-        LOG.info("Retrieved of following course '{}'", coursesToStore);
+        List<PluralsightCourse> coursesToStore = courseRetrievalService.getCourseFor(authorId)
+                .stream().filter(not(PluralsightCourse::isRetired))
+                .toList();
+        LOG.info("Retrieved of following {} course '{}'", coursesToStore.size(), coursesToStore);
     }
 }
